@@ -3,8 +3,9 @@ Bootstrap: docker
 From: pytorch/pytorch
 
 %files
-    ./share/activate_moris.sh ./activate_moris.sh
+    ./share/activate_spack.sh ./activate_spack.sh
     ./share/mpi_hello_world.c ./mpi_hello_world.c
+    ./share/make_moris_resource.sh ./make_moris_resource.sh
 %post -c /bin/bash
     # Install dependencies
     apt-get update && apt-get install -y \
@@ -321,9 +322,9 @@ From: pytorch/pytorch
     #------------------------------------------------------------
 
     if [ $DEVELOPPER_MODE = "1" ];then
-        bash $WORKSPACE/moris/share/spack/make_moris_resource.sh
+        bash $ORGDIR/make_moris_resource.sh
     else
-        bash $WORKSPACE/moris/share/spack/make_moris_resource.sh view
+        bash $ORGDIR/make_moris_resource.sh view
     fi
 
 
@@ -333,13 +334,17 @@ From: pytorch/pytorch
     cd $WORKSPACE/openmpi_test
     mv $ORGDIR/mpi_hello_world.c .
     mpicc -o mpi_hello_world mpi_hello_world.c
+    echo "Sourcing moris config"
+    source $WORKSPACE/BASHRC_MORIS
+    echo "Adding moris environment variables to apptainer environment"
+    cat $WORKSPACE/BASHRC_MORIS >> $APPTAINER_ENVIRONMENT
     echo "Compiling moris"
     cd $WORKSPACE/moris
     mkdir build
     cd build
     cmake -DBUILD_ALL=ON -DMORIS_USE_EXAMPLES=ON -DMORIS_HAVE_PETSC=OFF -DMORIS_HAVE_SLEPC=OFF -DMORIS_USE_PARDISO=OFF -DMORIS_USE_MUMPS=OFF -DMORIS_HAVE_GCMMA=OFF -DMORIS_HAVE_LBFGS=OFF -DMORIS_HAVE_SNOPT=OFF ..
     make -j 48
-    ctest
+    # ctest
 
 %test
     echo "Running Tests"

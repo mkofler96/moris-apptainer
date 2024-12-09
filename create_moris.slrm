@@ -1,6 +1,6 @@
 #!/bin/bash
  
-#SBATCH --partition=GPU-v100        # select a partition i.e. "GPU-v100"
+#SBATCH --partition=GPU-a40       # select a partition i.e. "GPU-v100"
 #SBATCH --nodes=1                   # select number of nodes
 #SBATCH --time=48:00:00             # request 48 hours of wall clock time
 #SBATCH --cpus-per-task=28          # request 28 cpus
